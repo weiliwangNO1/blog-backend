@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.mengxuegu.blog.system.mapper.SysRoleMapper">
+
+    <!--根据用户id删除用户角色关系数据-->
+    <delete id="deleteRoleMenuByRoleId">
+        DELETE FROM sys_role_menu WHERE role_id = #{roleId}
+    </delete>
+
+    <!-- 根据角色id查询此角色拥有的权限菜单ids -->
+    <select id="findMenuIdsById" resultType="String">
+        SELECT menu_id FROM sys_role_menu WHERE role_id = #{id}
+    </select>
+
+    <!--新增角色菜单权限数据
+    foreach 标签说明：
+    item "每个元素"， index "索引"， separator 标签体中整体内容以逗号分隔：(1, 1) , (1, 2)
+    注意调用方法获取id值时，包名前和方法名前都有@符号，共两个@
+    要手动指定 id，不然报错 Field 'id' doesn't have a default value
+    -->
+    <insert id="saveRoleMenu">
+        INSERT INTO sys_role_menu(id, role_id, menu_id) VALUES
+        <foreach collection="menuIds" item="item" index="index" separator=",">
+            (
+            '${@com.baomidou.mybatisplus.core.toolkit.IdWorker@getId()}', #{roleId}, #{item}
+            )
+        </foreach>
+    </insert>
+
+</mapper>
